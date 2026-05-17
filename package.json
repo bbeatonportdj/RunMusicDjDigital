@@ -1,0 +1,29 @@
+{
+  "name": "runmusicdjdigital",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "BROWSERSLIST_ROOT_PATH=. vite --host 127.0.0.1 --port 3000",
+    "build": "BROWSERSLIST_ROOT_PATH=. vite build",
+    "preview": "BROWSERSLIST_ROOT_PATH=. vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@stripe/stripe-js": "^9.5.0",
+    "@supabase/supabase-js": "^2.39.7",
+    "lucide-react": "^1.16.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.4"
+  }
+}

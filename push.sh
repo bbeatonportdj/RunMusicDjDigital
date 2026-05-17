@@ -18,6 +18,10 @@ echo "🧹 Renaming folder/file casing to lowercase..."
 git mv Src src 2>/dev/null || true
 git mv src/Main.jsx src/main.jsx 2>/dev/null || true
 
+# 3.5. Build the project locally to keep dist/ folder updated
+echo "🏗️ Compiling local production build..."
+npm run build
+
 # 4. Stage all changes
 echo "➕ Staging files..."
 git add -A

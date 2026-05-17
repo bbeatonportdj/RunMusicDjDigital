@@ -2,6 +2,28 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from './supabaseClient';
 import { Zap, Home, Headphones, Music, ShoppingCart, Gift, Package, Crown, Users, BookOpen, MessageSquare, ArrowRight, Search, LoaderCircle, Play, Disc3, Heart, Bookmark, LogIn, Sun, PanelLeft, Volume2, SkipBack, SkipForward, Repeat, Shuffle, LogOut, X, Clock, Trash2, Plus, Upload, CheckCircle2, Pause, RotateCcw } from 'lucide-react';
 
+const VinylLogo = ({ className = "w-8 h-8" }) => (
+  <svg viewBox="0 0 100 100" className={`${className} drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]`}>
+    <circle cx="50" cy="50" r="48" fill="#090d16" stroke="#1e293b" strokeWidth="1" />
+    <circle cx="50" cy="50" r="42" fill="none" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="3,3" />
+    <circle cx="50" cy="50" r="36" fill="none" stroke="#1e293b" strokeWidth="0.5" />
+    <circle cx="50" cy="50" r="30" fill="none" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="4,2" />
+    <circle cx="50" cy="50" r="24" fill="none" stroke="#1e293b" strokeWidth="0.5" />
+    <circle cx="50" cy="50" r="18" fill="url(#neonGradient)" opacity="0.8" />
+    <circle cx="50" cy="50" r="12" fill="#090d16" />
+    <path d="M 42,50 Q 46,42 50,50 T 58,50" fill="none" stroke="#22d3ee" strokeWidth="1" strokeLinecap="round" />
+    <path d="M 44,50 Q 47,45 50,50 T 56,50" fill="none" stroke="#3b82f6" strokeWidth="0.75" strokeLinecap="round" />
+    <circle cx="50" cy="50" r="3" fill="#020617" stroke="#22d3ee" strokeWidth="0.5" />
+    <defs>
+      <radialGradient id="neonGradient" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.8" />
+        <stop offset="60%" stopColor="#3b82f6" stopOpacity="0.4" />
+        <stop offset="100%" stopColor="#090d16" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+  </svg>
+);
+
 const packs = [
   {
     id: 1,
@@ -325,10 +347,8 @@ export default function App() {
         <div className="flex flex-col gap-2 border-b border-blue-800/30 p-6 bg-slate-950">
           <div className="flex items-center gap-3 h-12">
             <div className="relative">
-              <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-md w-8 h-8"></div>
-              <div className="absolute inset-0 w-8 h-8 bg-white rounded-full"></div>
-              <img src="/assets/565d219bd_super-crate-black-1-600x600-removebg-preview.png" alt="RunMusicDjDigital" className="w-8 h-8 object-contain drop-shadow-xl relative z-10" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center">
+              <VinylLogo className="w-8 h-8 relative z-10 animate-spin-slow" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center z-20">
                 <Zap className="w-2 h-2 text-yellow-900" />
               </div>
             </div>
@@ -415,7 +435,13 @@ export default function App() {
           {session ? (
             <div className="flex flex-col items-center gap-3">
               <div className="flex items-center gap-3 w-full">
-                <img src={session.user.user_metadata.avatar_url || '/assets/565d219bd_super-crate-black-1-600x600-removebg-preview.png'} alt="Avatar" className="w-10 h-10 rounded-full border border-cyan-500/30 object-cover" />
+                {session.user.user_metadata.avatar_url ? (
+                  <img src={session.user.user_metadata.avatar_url} alt="Avatar" className="w-10 h-10 rounded-full border border-cyan-500/30 object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full border border-cyan-500/30 flex items-center justify-center bg-slate-900 text-cyan-400">
+                    <VinylLogo className="w-6 h-6 animate-spin-slow" />
+                  </div>
+                )}
                 <div className="flex flex-col text-left flex-1 min-w-0">
                   <span className="text-sm font-bold text-white truncate">{session.user.user_metadata.full_name || session.user.email}</span>
                   <span className="text-[10px] text-cyan-300 truncate">{session.user.email}</span>
@@ -464,9 +490,7 @@ export default function App() {
                     <PanelLeft className="w-5 h-5" />
                   </button>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center overflow-hidden">
-                       <img src="/assets/565d219bd_super-crate-black-1-600x600-removebg-preview.png" alt="RunMusicDjDigital" className="w-full h-full object-cover" />
-                    </div>
+                    <VinylLogo className="w-6 h-6 animate-spin-slow" />
                     <div className="flex flex-col">
                       <span className="text-sm font-bold leading-none">RunMusicDjDigital</span>
                       <span className="text-[10px] text-cyan-300">DJ Edit Marketplace</span>

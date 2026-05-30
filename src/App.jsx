@@ -170,6 +170,7 @@ export default function App() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [view, setView] = useState('discover'); // 'discover' or 'profile'
   const [likedPacks, setLikedPacks] = useState(() => {
     const saved = localStorage.getItem('likedPacks');
@@ -326,6 +327,9 @@ export default function App() {
   const handleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
     });
   };
 
@@ -488,7 +492,10 @@ export default function App() {
             <>
               <p className="text-sm text-slate-300">Optional: Log in to save favorites and purchase history.</p>
               <div className="flex items-center gap-2">
-                <button onClick={handleLogin} className="flex-1 inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium border border-cyan-500/50 bg-transparent h-9 px-4 py-2 text-cyan-300 hover:bg-blue-800/30 transition-colors">
+                <button 
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium border border-cyan-500/50 bg-transparent h-9 px-4 py-2 text-cyan-300 hover:bg-blue-800/30 transition-colors"
+                >
                   <LogIn className="w-4 h-4 mr-2" /> Login with Google
                 </button>
                 <button className="w-9 h-9 flex items-center justify-center rounded-md text-slate-300 hover:text-white hover:bg-purple-800/30 transition-all">
@@ -570,15 +577,24 @@ export default function App() {
                   </h1>
                   <p className="text-lg md:text-xl text-slate-300 max-w-xl mx-auto mb-8">Thousands of exclusive DJ edits — browse, preview, and download instantly.</p>
                   
-                  <div className="relative max-w-lg mx-auto">
+                  <div className="relative max-w-lg mx-auto mb-8">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
                     <input 
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500" 
+                      className="w-full pl-12 pr-4 py-4 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all" 
                       placeholder="Search tracks, artists, genres..." 
                     />
                   </div>
+
+                  {!session && (
+                    <button 
+                      onClick={() => setIsAuthModalOpen(true)}
+                      className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full text-black font-black text-lg hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] transition-all active:scale-[0.98] animate-bounce-subtle"
+                    >
+                      <Crown className="w-6 h-6" /> Join for Free
+                    </button>
+                  )}
                   
                   <div className="flex items-center justify-center gap-8 mt-8 text-sm text-slate-400">
                     <span>🎵 1000+ Edit Packs</span>
@@ -1037,6 +1053,44 @@ export default function App() {
             </div>
           )}
         </div>
+
+        {/* Auth Modal */}
+        {isAuthModalOpen && (
+          <div className="fixed inset-0 z-[90] flex items-center justify-center px-4 bg-black/80 backdrop-blur-md">
+            <div className="relative w-full max-w-sm bg-slate-900 rounded-3xl border border-slate-700 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 text-center">
+              <div className="absolute top-4 right-4">
+                <button onClick={() => setIsAuthModalOpen(false)} className="p-2 hover:bg-slate-800 rounded-full transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-8 pt-12">
+                <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-cyan-500/20 rotate-3">
+                  <VinylLogo className="w-12 h-12 text-black animate-spin-slow" />
+                </div>
+                
+                <h2 className="text-2xl font-black text-white mb-2 italic uppercase tracking-tighter">Join the Community</h2>
+                <p className="text-slate-400 text-sm mb-8">Sign up or log in to save your favorite packs and manage your collection.</p>
+                
+                <button 
+                  onClick={() => {
+                    handleLogin();
+                    setIsAuthModalOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-3 bg-white text-black font-black py-4 rounded-xl hover:bg-slate-200 transition-all active:scale-[0.98] mb-4"
+                >
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/smartlock/google.svg" alt="Google" className="w-5 h-5" />
+                  Continue with Google
+                </button>
+                
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">
+                  By continuing, you agree to our <br />
+                  <span className="text-slate-400 font-bold">Terms of Service</span> & <span className="text-slate-400 font-bold">Privacy Policy</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Upload Modal */}
         {isUploadOpen && (

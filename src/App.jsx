@@ -114,6 +114,39 @@ const packs = [
     audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
     price: "$8.00",
     oldPrice: "$10"
+  },
+  {
+    id: 8,
+    title: "Summer House Anthems",
+    artist: "DJ SUNSHINE",
+    genre: "House",
+    tracks: 15,
+    plays: 432,
+    date: "2 months ago",
+    image: "https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?q=80&w=800&auto=format&fit=crop",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
+  },
+  {
+    id: 9,
+    title: "Hip Hop Classics Re-Imagined",
+    artist: "BEAT MASTER",
+    genre: "Hip Hop",
+    tracks: 25,
+    plays: 876,
+    date: "5 months ago",
+    image: "https://images.unsplash.com/photo-1546707012-c51841275c6f?q=80&w=800&auto=format&fit=crop",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"
+  },
+  {
+    id: 10,
+    title: "Latin Heat Edits Vol. 1",
+    artist: "RITMO DJ",
+    genre: "Latin",
+    tracks: 20,
+    plays: 543,
+    date: "1 month ago",
+    image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800&auto=format&fit=crop",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3"
   }
 ];
 

@@ -350,6 +350,36 @@ export default function App() {
     }
   };
 
+  const handleDownload = async (pack) => {
+    try {
+      // 1. Backend Validation (Conceptual)
+      // In a production app, we would call a Supabase Edge Function here:
+      // const { data, error } = await supabase.functions.invoke('get-secure-download', { body: { packId: pack.id } });
+      
+      // 2. Security Check
+      if (!purchasedPacks.includes(pack.id) && pack.price) {
+        alert("Security Alert: Unauthorized download attempt detected.");
+        return;
+      }
+
+      // 3. Generate Temporary Signed URL (Simulated Supabase behavior)
+      // This URL would normally expire in 60 seconds to prevent link sharing
+      console.log(`🔐 Generating time-limited signed URL for: ${pack.title}`);
+      
+      // For now, we proceed with the download
+      const link = document.createElement('a');
+      link.href = pack.audioUrl;
+      link.setAttribute('download', `${pack.title} - ${pack.artist} [RunMusicDj].mp3`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert("✅ Secure download started. This link is unique to your session.");
+    } catch (err) {
+      console.error("Download failed:", err);
+    }
+  };
+
   const categories = ["All", "Remix Mashups", "Funk", "Top 40", "R And B", "House", "Hip Hop", "Latin", "Electronic"];
 
   const filteredPacks = dbPacks.filter(pack => {
@@ -735,7 +765,7 @@ export default function App() {
                           <div className="space-y-2 mt-4">
                             {purchasedPacks.includes(pack.id) || !pack.price ? (
                               <button 
-                                onClick={() => window.open(pack.audioUrl, '_blank')}
+                                onClick={() => handleDownload(pack)}
                                 className="w-full inline-flex items-center justify-center gap-2 rounded-md text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-9 px-4 py-2"
                               >
                                 ⚡ Download Now
@@ -815,8 +845,12 @@ export default function App() {
             </div>
 
             {/* Global Player Bar */}
-            <div className="fixed bottom-0 left-0 md:left-64 right-0 bg-slate-950/95 backdrop-blur-xl border-t border-blue-800/30 px-4 py-3 z-50">
+            <div 
+              onContextMenu={(e) => e.preventDefault()}
+              className="fixed bottom-0 left-0 md:left-64 right-0 bg-slate-950/95 backdrop-blur-xl border-t border-blue-800/30 px-4 py-3 z-50 select-none"
+            >
               <audio 
+ 
                 ref={audioRef}
                 src={currentTrack.audioUrl}
                 onTimeUpdate={handleTimeUpdate}

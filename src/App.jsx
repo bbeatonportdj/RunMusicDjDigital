@@ -380,7 +380,7 @@ export default function App() {
     }
   };
 
-  const categories = ["All", "Remix Mashups", "Funk", "Top 40", "R And B", "House", "Hip Hop", "Latin", "Electronic"];
+  const categories = ["All", "Remix Mashups", "Pop Old School", "Funk", "Top 40", "R And B", "House", "Hip Hop", "Latin", "Electronic"];
 
   const filteredPacks = dbPacks.filter(pack => {
     const matchesSearch = pack.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

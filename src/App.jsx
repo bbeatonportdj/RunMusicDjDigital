@@ -155,6 +155,10 @@ export default function App() {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [view, setView] = useState('discover'); // 'discover' or 'profile'
+  const [purchasedPacks, setPurchasedPacks] = useState(() => {
+    const saved = localStorage.getItem('purchasedPacks');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [likedPacks, setLikedPacks] = useState(() => {
     const saved = localStorage.getItem('likedPacks');
     return saved ? JSON.parse(saved) : [];
@@ -177,6 +181,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('likedPacks', JSON.stringify(likedPacks));
   }, [likedPacks]);
+
+  useEffect(() => {
+    localStorage.setItem('purchasedPacks', JSON.stringify(purchasedPacks));
+  }, [purchasedPacks]);
 
   const toggleLike = (packId) => {
     if (likedPacks.includes(packId)) {
@@ -272,6 +280,10 @@ export default function App() {
     // Simulate Stripe Checkout delay
     await new Promise(resolve => setTimeout(resolve, 2000));
     
+    // Add cart items to purchased packs
+    const newPurchasedIds = cart.map(item => item.id);
+    setPurchasedPacks(prev => [...new Set([...prev, ...newPurchasedIds])]);
+    
     setIsCheckoutLoading(false);
     setCheckoutSuccess(true);
     setCart([]); // Clear cart
@@ -351,7 +363,7 @@ export default function App() {
                          (priceFilter === 'free' && !pack.price) || 
                          (priceFilter === 'paid' && pack.price);
 
-    const matchesView = view === 'discover' || (view === 'profile' && likedPacks.includes(pack.id));
+    const matchesView = view === 'discover' || (view === 'profile' && (likedPacks.includes(pack.id) || purchasedPacks.includes(pack.id)));
     
     return matchesSearch && matchesCategory && matchesPrice && matchesView;
   });
@@ -645,35 +657,38 @@ export default function App() {
                   {/* Filter Bar */}
                   <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
                     <div className="flex items-center gap-3">
-                      <span className="text-4xl">{view === 'profile' ? '👤' : '🔥'}</span>
+                      <span className="text-4xl">
+                        {view === 'profile' ? '🎧' : '🔥'}
+                      </span>
                       <h2 className="text-3xl font-bold text-white">
-                        {view === 'profile' ? 'My Liked Packs' : "What's Hot"}
+                        {view === 'profile' ? 'Your Collection' : "What's Hot"}
                       </h2>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-1 border border-slate-700">
-                        <button 
-                          onClick={() => setPriceFilter('all')}
-                          className={`px-4 py-1.5 rounded text-sm font-medium transition-all ${priceFilter === 'all' ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white'}`}
-                        >
-                          All
-                        </button>
-                        <button 
-                          onClick={() => setPriceFilter('free')}
-                          className={`px-4 py-1.5 rounded text-sm font-medium transition-all ${priceFilter === 'free' ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white'}`}
-                        >
-                          Free
-                        </button>
-                        <button 
-                          onClick={() => setPriceFilter('paid')}
-                          className={`px-4 py-1.5 rounded text-sm font-medium transition-all ${priceFilter === 'paid' ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white'}`}
-                        >
-                          Premium
-                        </button>
+                    {view === 'discover' && (
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-1 border border-slate-700">
+                          <button 
+                            onClick={() => setPriceFilter('all')}
+                            className={`px-4 py-1.5 rounded text-sm font-medium transition-all ${priceFilter === 'all' ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white'}`}
+                          >
+                            All
+                          </button>
+                          <button 
+                            onClick={() => setPriceFilter('free')}
+                            className={`px-4 py-1.5 rounded text-sm font-medium transition-all ${priceFilter === 'free' ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white'}`}
+                          >
+                            Free
+                          </button>
+                          <button 
+                            onClick={() => setPriceFilter('paid')}
+                            className={`px-4 py-1.5 rounded text-sm font-medium transition-all ${priceFilter === 'paid' ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white'}`}
+                          >
+                            Premium
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {loading ? (
                       Array.from({ length: 8 }).map((_, i) => (
@@ -718,19 +733,19 @@ export default function App() {
                           </div>
 
                           <div className="space-y-2 mt-4">
-                            {pack.price ? (
+                            {purchasedPacks.includes(pack.id) || !pack.price ? (
+                              <button 
+                                onClick={() => window.open(pack.audioUrl, '_blank')}
+                                className="w-full inline-flex items-center justify-center gap-2 rounded-md text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-9 px-4 py-2"
+                              >
+                                ⚡ Download Now
+                              </button>
+                            ) : (
                               <button 
                                 onClick={() => addToCart(pack)}
                                 className="w-full inline-flex items-center justify-center gap-2 rounded-md text-sm font-bold bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white h-9 px-4 py-2"
                               >
                                 🛒 Add to Cart — <span className="line-through opacity-60">{pack.oldPrice}</span> <span className="text-yellow-300">{pack.price}</span>
-                              </button>
-                            ) : (
-                              <button 
-                                onClick={() => addToCart(pack)}
-                                className="w-full inline-flex items-center justify-center gap-2 rounded-md text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-9 px-4 py-2"
-                              >
-                                🎁 FREE Download
                               </button>
                             )}
                             <button 
@@ -740,7 +755,6 @@ export default function App() {
                               View Pack
                             </button>
                           </div>
-
                           <div className="flex items-center justify-between mt-4 text-xs">
                             <div className="flex flex-col gap-1">
                               <div className="flex items-center gap-1 text-slate-400">
@@ -1155,13 +1169,25 @@ export default function App() {
                     <CheckCircle2 className="w-10 h-10 text-green-500" />
                   </div>
                   <h2 className="text-2xl font-black text-white mb-2">Payment Successful!</h2>
-                  <p className="text-slate-400 mb-8">Thank you for your purchase. Your fire new edits are ready for download in your profile.</p>
-                  <button 
-                    onClick={() => setCheckoutSuccess(false)}
-                    className="w-full py-4 rounded-xl bg-white text-black font-bold hover:bg-slate-200 transition-colors"
-                  >
-                    Got it!
-                  </button>
+                  <p className="text-slate-400 mb-8">Thank you for your purchase. Your fire new edits are ready for download in your collection.</p>
+                  <div className="flex flex-col gap-3">
+                    <button 
+                      onClick={() => {
+                        setCheckoutSuccess(false);
+                        setView('profile');
+                      }}
+                      className="w-full py-4 rounded-xl bg-cyan-500 text-black font-bold hover:bg-cyan-400 transition-colors shadow-lg shadow-cyan-500/20"
+                    >
+                      View in Collection
+                    </button>
+                    <button 
+                      onClick={() => setCheckoutSuccess(false)}
+                      className="w-full py-4 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 transition-colors"
+                    >
+                      Continue Browsing
+                    </button>
+                  </div>
+
                 </div>
               </div>
             )}

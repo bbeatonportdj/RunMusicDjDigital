@@ -172,6 +172,8 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isAdmin = session?.user?.user_metadata?.role === 'admin' || session?.user?.email === 'bbeatonportdj@gmail.com';
+
   useEffect(() => {
     localStorage.setItem('likedPacks', JSON.stringify(likedPacks));
   }, [likedPacks]);
@@ -446,20 +448,22 @@ export default function App() {
                     <span className="font-medium">Bundle Builder</span>
                   </a>
                 </li>
-                <li className="mt-4 px-2">
-                  <button 
-                    onClick={() => {
-                      if (!session) {
-                        navigate('/login');
-                      } else {
-                        setIsUploadOpen(true);
-                      }
-                    }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all active:scale-95"
-                  >
-                    <Plus className="w-4 h-4" /> Upload New Pack
-                  </button>
-                </li>
+                {isAdmin && (
+                  <li className="mt-4 px-2">
+                    <button 
+                      onClick={() => {
+                        if (!session) {
+                          navigate('/login');
+                        } else {
+                          setIsUploadOpen(true);
+                        }
+                      }}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all active:scale-95"
+                    >
+                      <Plus className="w-4 h-4" /> Upload New Pack
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
             
@@ -475,7 +479,12 @@ export default function App() {
                       </div>
                     )}
                     <div className="flex flex-col text-left flex-1 min-w-0">
-                      <span className="text-sm font-bold text-white truncate">{session.user.user_metadata.full_name || session.user.email}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-white truncate">{session.user.user_metadata.full_name || session.user.email}</span>
+                        {isAdmin && (
+                          <span className="bg-cyan-500/20 text-cyan-400 text-[8px] font-black px-1 rounded border border-cyan-500/30 uppercase tracking-tighter">Admin</span>
+                        )}
+                      </div>
                       <span className="text-[10px] text-cyan-300 truncate">{session.user.email}</span>
                     </div>
                   </div>
